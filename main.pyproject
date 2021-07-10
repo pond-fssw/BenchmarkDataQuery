@@ -1,0 +1,4 @@
+{
+    "files": ["python/main.py",
+              "python/ui/BenchmarkDataQuery.ui"]
+}
