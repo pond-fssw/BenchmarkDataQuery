@@ -1,3 +1,1 @@
-from BenchmarkDataParser import DataParser
-
-g = DataParser()
+import numpy as np

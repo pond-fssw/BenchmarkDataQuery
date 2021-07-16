@@ -16,19 +16,69 @@ class BenchmarkDataQuery(QtWidgets.QMainWindow):
         self.init_ui()
 
     def init_vars(self):
+        self.setWindowTitle("CE Hardware Benchmarking")
         self.devicesToCompare = []
-        self.summaryFilesPath = "test_docs"
+        self.summaryFilesPath = "test_docs/"
+        self.tempFile = "Comparison_Table.csv" 
+        self.benchmarkInputs = [[self.b1_1, self.b1_2],
+                                [self.b2_1, self.b2_2],
+                                [self.b3_1, self.b3_2],
+                                [self.b4_1, self.b4_2]]
+        self.benchmarkInputsNames = [["a", "swd"],
+                                    ["asd", "asd"],
+                                    ["sa", "asd"],
+                                    ["s", "asd"]]
 
     def init_ui(self):
         self.generateCompareDropdown()
         self.genTable.clicked.connect(self.generateTable)
         self.addDevice.clicked.connect(self.addThisDevice)
         self.clearDevices.clicked.connect(self.clearAllDevices)
+        self.exportTable.clicked.connect(self.exportCompTable)
+        self.queryButton.clicked.connect(self.generateQuery)
+        self.benchmarkRun.clicked.connect(self.benchmarkSaveSelection)
+        self.benchmarkClear.clicked.connect(self.benchmarkClearSelection)
+    
+    def benchmarkSaveSelection(self):
+        fileName = self.summaryFilesPath + self.benchmarkDevice.text() + ".csv"
+
+        for input_group, input_label_group in zip(self.benchmarkInputs, self.benchmarkInputsNames):
+            for property_value, property_label in zip(input_group, input_label_group):
+                pass
+
+    def benchmarkClearSelection(self):
+        for input_group in self.benchmarkInputs:
+            for property_value in input_group:
+                property_value.setText("")
+
+    def generateQuery(self):
+        deviceToQuery = self.toQuery.currentText()
+
+        deviceDataParsed = DataParser(deviceToQuery)
+        self.queriedDevice.setText("Device: " + self.byeDotCSV(deviceToQuery))
+        self.qPassiveTotal.setText("Passive Total: " + deviceDataParsed.getFeature("Passive Total"))
+        self.qActiveTotal.setText("Active Total: " + deviceDataParsed.getFeature("Active Total"))
+        self.qActiveDissipation.setText("Active Dissipation: " + deviceDataParsed.getFeature("Active Dissipation"))
+
+    def exportCompTable(self):
+        tempFile = self.tempFile
+        df = pd.read_csv(tempFile)
+
+        if not df.empty:
+            folderpath = QtWidgets.QFileDialog.getExistingDirectory(self, 'Select Folder')
+            filename = self.exportfile.text()
+            filepath = folderpath + "/" + filename + ".csv"
+
+            df.to_csv(filepath)
+
+    def byeDotCSV(self, fileName):
+        return fileName.strip(".csv")
 
     def generateCompareDropdown(self):
         for deviceFile in os.listdir(self.summaryFilesPath):
-            self.toCompare.addItem(deviceFile)
-            self.toQuery.addItem(deviceFile)
+            deviceName = self.byeDotCSV(deviceFile)
+            self.toCompare.addItem(deviceName)
+            self.toQuery.addItem(deviceName)
 
     def addThisDevice(self):
         deviceFile = self.toCompare.currentText()
@@ -48,12 +98,13 @@ class BenchmarkDataQuery(QtWidgets.QMainWindow):
 
         counter = 1
         for labelItem, labelName in zip(labelItems, labelNames):
+            labelName = self.byeDotCSV(labelName)
             newLabel = "Device " + str(counter) + ": " + labelName
             labelItem.setText(newLabel) 
             counter += 1
 
     def generateTable(self):
-        tempFile = "Comparison_Table.csv" 
+        tempFile = self.tempFile
         f = open(tempFile, "w+")
         f.close()
 
@@ -74,9 +125,10 @@ class BenchmarkDataQuery(QtWidgets.QMainWindow):
                     
                     writer.writerow(row)
 
-            self.embedTable(tempFile)
+            self.embedTable()
 
-    def embedTable(self, tempFile):
+    def embedTable(self):
+        tempFile = self.tempFile
         table = self.compTable
         df = pd.read_csv(tempFile, skiprows=4)
 

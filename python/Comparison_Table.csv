@@ -1,0 +1,27 @@
+Feature,Value,Value
+nan,nan,nan
+Device Name,Samsung,Samsung
+Performance,[W],[W]
+Passive Total,0,0
+Active Total,0,0
+Active Dissipation,0,0
+CPU Power,0,0
+GPU Power,0,0
+ROS Power,0,0
+Thermal,[C],[C]
+CPU Max Temp,0,0
+GPU Max Temp,0,0
+Keyboard Max Temp,0,0
+Backcover Max Temp,0,0
+Inlet Temp,0,0
+Outlet Temp,0,0
+Dimensions,[mm],[mm]
+Width,0,0
+Depth,0,0
+Weight,0,0
+Acoustics,0,0
+Fan dimensions,0,0
+Fan thickness,0,0
+Heat pipe length,0,0
+Total Volume,0,0
+Total Weight,0,0
